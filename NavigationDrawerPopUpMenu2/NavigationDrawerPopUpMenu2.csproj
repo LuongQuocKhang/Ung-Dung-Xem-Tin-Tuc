@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevComponents.DotNetBar2, Version=14.0.0.17, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="EO.Base, Version=18.1.15.0, Culture=neutral, PublicKeyToken=e92353a6bf73fffc, processorArchitecture=MSIL">
       <HintPath>..\packages\EO.WebBrowser.18.1.15\lib\EO.Base.dll</HintPath>
     </Reference>
@@ -83,6 +84,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Class\Job.cs" />
+    <Compile Include="Class\MenuTree.cs" />
     <Compile Include="Class\New.cs" />
     <Compile Include="Handle\Crawl.cs" />
     <Compile Include="Handle\ICrawl.cs" />

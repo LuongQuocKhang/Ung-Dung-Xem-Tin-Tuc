@@ -25,5 +25,9 @@ namespace NavigationDrawerPopUpMenu2
         {
             return WebUtility.HtmlDecode(httpclient.GetStringAsync(Url).Result);
         }
+        public string CrawlDataFromUrls(string url, HttpClient httpClient)
+        { 
+            return (httpClient.GetStringAsync(url).Result);
+        }
     }
 }

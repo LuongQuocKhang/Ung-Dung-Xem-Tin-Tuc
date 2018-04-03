@@ -31,6 +31,7 @@
 
     </Window.Triggers>
     <Grid Background="Azure">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="9*"></RowDefinition>
@@ -40,15 +41,15 @@
                 <DropShadowEffect BlurRadius="1" ShadowDepth="1" Color="#FFACACAC"/>
             </Grid.Effect>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Margin="10">
+                <!--<materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Margin="10">
                     <StackPanel Width="150">
                         <Button Content="Giới thiệu"/>
                         <Separator/>
                         <Button Content="Thoát" Click="Button_Click"/>
                     </StackPanel>
-                </materialDesign:PopupBox>
+                </materialDesign:PopupBox>-->
             </StackPanel>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Ứng dụng hỗ trợ sinh viên</TextBlock>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Ứng dụng hỗ trợ sinh viên CNTT</TextBlock>
         </Grid>
         <Grid Grid.Row="1" x:Name="GridMain" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="auto" Width="auto">
             <Grid.ColumnDefinitions>
@@ -57,7 +58,7 @@
                 <ColumnDefinition Width="2"></ColumnDefinition>
                 <ColumnDefinition Width="6*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ListView x:Name="ListViewNews" Grid.Column="1" >
+            <ListView x:Name="ListViewNews" Grid.Column="1" Grid.ColumnSpan="2" Margin="1.6,0,0.4,0.4" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -91,6 +92,8 @@
                                 <TextBlock Margin="5 5 5 5" Text="{Binding Location}" Grid.Row="3"></TextBlock>
                                 <TextBlock Margin="5 5 5 5" Text="{Binding Money}" Grid.Row="4"></TextBlock>
                             </Grid>
+
+
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -100,6 +103,15 @@
                           HorizontalAlignment="Stretch"
                           MinWidth="10"></GridSplitter>
             <eo:WebControl x:Name="web" Grid.Column="3" Height="{Binding Path=Height,ElementName=window}" VerticalAlignment="Bottom"></eo:WebControl>
+            <TreeView x:Name="treeMain" Margin="-208,0,10.4,10.4">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Items}">
+
+                       <TextBlock Margin="5 5 5 5" PreviewMouseDown="TextBlock_PreviewMouseDown" Foreground="Blue" Text="{Binding Name}" Tag="{Binding URL}"></TextBlock>
+
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
         </Grid>
         <Grid Grid.RowSpan="2" x:Name="GridMenu" Width="70" HorizontalAlignment="Left" Background="#FF31577E">
             <Grid.Effect>
@@ -144,7 +156,7 @@
                     <ListViewItem x:Name="ItemStudy" Height="60">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="School" Height="25" Width="25" Margin="10"/>
-                            <TextBlock Text="Du học - Học bổng" VerticalAlignment="Center" Margin="15 10"/>
+                            <TextBlock Text="Học lập trình" VerticalAlignment="Center" Margin="15 10"/>
                         </StackPanel>
                     </ListViewItem>
                     <ListViewItem x:Name="ItemExit"  Height="60">

@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using NavigationDrawerPopUpMenu2.Class;
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -17,6 +19,7 @@ namespace NavigationDrawerPopUpMenu2
         HttpClient httpclient;
         HttpClientHandler handler;
         CookieContainer cookie;
+        ObservableCollection<MenuTree> TreeItems;
         public MainWindow()
         {
             InitializeComponent();
@@ -25,6 +28,10 @@ namespace NavigationDrawerPopUpMenu2
 
 
             listtuyendung = new ObservableCollection<object>();
+
+
+            TreeItems = new ObservableCollection<MenuTree>();
+            treeMain.ItemsSource = TreeItems;
 
             cookie = new CookieContainer();
             handler = new HttpClientHandler()
@@ -82,6 +89,12 @@ namespace NavigationDrawerPopUpMenu2
                         Crawl_Job_Data("https://topdev.vn/it-jobs/");
                     }).Start();
 
+                    break;
+                case "ItemStudy":
+                    new Task(() =>
+                    {
+                        Crawl_Study_Data("https://www.howkteam.com/Learn");
+                    }).Start();
                     break;
                 case "ItemExit":
                     Application.Current.Shutdown();
@@ -144,6 +157,51 @@ namespace NavigationDrawerPopUpMenu2
             web.WebView.LoadUrl(link);
         }
 
+        public void Crawl_Study_Data(string url)
+        {
+          
+            string html = Crawl.Instance.CrawlDataFromUrl(url, httpclient);
+            var CourseList = Regex.Matches(html, @"<div class=""info-course(.*?)</div>", RegexOptions.Singleline);
+            foreach (var course in CourseList)
+            {
+                string courseName = Regex.Match(course.ToString(), @"(?=<h2>).*?(?=</h2>)").Value.Replace("<h2>", "");
+                string linkCourse = "https://www.howkteam.com" + Regex.Match(course.ToString(), @"'(.*?)'", RegexOptions.Singleline).Value.Replace("'", "");
+
+                MenuTree item = new MenuTree();
+                item.Name = courseName;
+                item.URL = linkCourse;
+
+                AddItemIntoTreeViewItem(TreeItems, item);
+
+               string htmlCourse = Crawl.Instance.CrawlDataFromUrl(linkCourse, httpclient);
+                string sideBar = Regex.Match(htmlCourse, @"<div class=""sidebardetail"">(.*?)</ul>", RegexOptions.Singleline).Value;
+                var listLecture = Regex.Matches(sideBar, @"<a href=""/course(.*?)</a>", RegexOptions.Singleline);
+                foreach (var lecture in listLecture)
+                {
+                   
+
+                   string lectureName = Regex.Match(lecture.ToString(), @">(.*?)</a>", RegexOptions.Singleline).Value.Replace(">", "").Replace("</a", "");
+             
+                    string linkLecture = "https://www.howkteam.com"+ Regex.Match(lecture.ToString(), @"<a href=""(.*?)"" class", RegexOptions.Singleline).Value.Replace("<a href=\"", "").Replace("\" class", "");
+
+                    MenuTree Subitem = new MenuTree();
+                    Subitem.Name = lectureName;
+                    Subitem.URL = linkLecture;
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    { item.Items.Add(Subitem); });
+
+                       
+                }
+            }
+        }
+
+        void AddItemIntoTreeViewItem(ObservableCollection<MenuTree> root, MenuTree node)
+        {
+            treeMain.Dispatcher.Invoke(new Action(() => {
+                root.Add(node);
+            }));
+        }
+
         public void Crawl_Tech_Data(string url)
         {
             string html = Crawl.Instance.CrawlDataFromUrl(url, httpclient);
@@ -177,6 +235,19 @@ namespace NavigationDrawerPopUpMenu2
             }
             ListViewNews.AddHandler(ListViewItem.MouseDoubleClickEvent, new MouseButtonEventHandler(item_MouseDoubleClick));
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+        private void TextBlock_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            String url =  (sender as TextBlock).Tag.ToString();
+
+            web.WebView.LoadUrl(url);
+        }
+
         public void item_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             string link = (ListViewNews.SelectedItem as New).Link;
