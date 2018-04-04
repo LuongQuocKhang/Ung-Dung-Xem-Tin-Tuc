@@ -31,7 +31,6 @@
 
     </Window.Triggers>
     <Grid Background="Azure">
-
         <Grid.RowDefinitions>
             <RowDefinition Height="60"></RowDefinition>
             <RowDefinition Height="9*"></RowDefinition>
@@ -53,12 +52,12 @@
         </Grid>
         <Grid Grid.Row="1" x:Name="GridMain" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="auto" Width="auto">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
                 <ColumnDefinition Width="3*" MinWidth="50"></ColumnDefinition>
-                <ColumnDefinition Width="2"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition Width="6*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ListView x:Name="ListViewNews" Grid.Column="1" Grid.ColumnSpan="2" Margin="1.6,0,0.4,0.4" >
+            <ListView x:Name="ListViewNews" Grid.Column="1" Grid.ColumnSpan="2" Margin="1.6,0,0.4,0.4" Visibility="Hidden">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
@@ -103,11 +102,11 @@
                           HorizontalAlignment="Stretch"
                           MinWidth="10"></GridSplitter>
             <eo:WebControl x:Name="web" Grid.Column="3" Height="{Binding Path=Height,ElementName=window}" VerticalAlignment="Bottom"></eo:WebControl>
-            <TreeView x:Name="treeMain" Margin="-208,0,10.4,10.4">
+            <TreeView x:Name="treeMain" Grid.Column="1" Visibility="Hidden">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Items}">
 
-                       <TextBlock Margin="5 5 5 5" PreviewMouseDown="TextBlock_PreviewMouseDown" Foreground="Blue" Text="{Binding Name}" Tag="{Binding URL}"></TextBlock>
+                       <TextBlock Margin="20 5 5 5" Foreground="Blue" Text="{Binding Name}" Tag="{Binding URL}"></TextBlock>
 
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
@@ -136,11 +135,6 @@
                     </Button>
                 </Grid>
                 <ListView x:Name="ListViewMenu" Foreground="#FF5C99D6" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ListViewMenu_SelectionChanged">
-                    <ListView.Triggers>
-                        <EventTrigger RoutedEvent="ListView.SelectionChanged" SourceName="ListViewMenu">
-                            <BeginStoryboard Storyboard="{StaticResource CloseMenu}"></BeginStoryboard>
-                        </EventTrigger>
-                    </ListView.Triggers>
                     <ListViewItem x:Name="ItemTech" Height="60">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="LaptopChromebook" Height="25" Width="25" Margin="10"/>

@@ -15,7 +15,6 @@ namespace NavigationDrawerPopUpMenu2
 
     public partial class MainWindow : Window
     {
-        ObservableCollection<object> listcongnghe, listtuyendung;
         HttpClient httpclient;
         HttpClientHandler handler;
         CookieContainer cookie;
@@ -23,12 +22,6 @@ namespace NavigationDrawerPopUpMenu2
         public MainWindow()
         {
             InitializeComponent();
-
-            listcongnghe = new ObservableCollection<object>();
-
-
-            listtuyendung = new ObservableCollection<object>();
-
 
             TreeItems = new ObservableCollection<MenuTree>();
             treeMain.ItemsSource = TreeItems;
@@ -67,8 +60,9 @@ namespace NavigationDrawerPopUpMenu2
             switch (((ListViewItem)((ListView)sender).SelectedItem).Name)
             {
                 case "ItemTech":
-
-                    listcongnghe.Clear();
+                    ListViewNews.Items.Clear();
+                    ListViewNews.Visibility = Visibility.Visible;
+                    treeMain.Visibility = Visibility.Hidden;
                     new Task(() =>
                     {
                         Crawl_Tech_Data("https://techtalk.vn/tech");
@@ -83,7 +77,9 @@ namespace NavigationDrawerPopUpMenu2
                     }).Start();
                     break;
                 case "ItemJob":
-                    listtuyendung.Clear();
+                    ListViewNews.Items.Clear();
+                    ListViewNews.Visibility = Visibility.Visible;
+                    treeMain.Visibility = Visibility.Hidden;
                     new Task(() =>
                     {
                         Crawl_Job_Data("https://topdev.vn/it-jobs/");
@@ -91,10 +87,13 @@ namespace NavigationDrawerPopUpMenu2
 
                     break;
                 case "ItemStudy":
+                    ListViewNews.Visibility = Visibility.Hidden;
+                    treeMain.Visibility = Visibility.Visible;
                     new Task(() =>
                     {
                         Crawl_Study_Data("https://www.howkteam.com/Learn");
                     }).Start();
+
                     break;
                 case "ItemExit":
                     Application.Current.Shutdown();
@@ -145,21 +144,12 @@ namespace NavigationDrawerPopUpMenu2
                 string salary = temp_salary.Substring(temp_salary.IndexOf('>') + 1);
                 jobs.Money = salary;
                 this.Dispatcher.Invoke(() => { ListViewNews.Items.Add(jobs); });
-                ListViewNews.AddHandler(ListViewItem.MouseDoubleClickEvent, new MouseButtonEventHandler(job_MouseDoubleClick));
+                ListViewNews.AddHandler(ListViewItem.MouseDoubleClickEvent, new MouseButtonEventHandler(item_MouseDoubleClick));
             }
-
-        }
-        public void job_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
-            string link = (ListViewNews.SelectedItem as Job).Link;
-            web.WebView.Url = null;
-            web.WebView.LoadUrl(link);
         }
 
         public void Crawl_Study_Data(string url)
-        {
-          
+        {  
             string html = Crawl.Instance.CrawlDataFromUrl(url, httpclient);
             var CourseList = Regex.Matches(html, @"<div class=""info-course(.*?)</div>", RegexOptions.Singleline);
             foreach (var course in CourseList)
@@ -178,21 +168,16 @@ namespace NavigationDrawerPopUpMenu2
                 var listLecture = Regex.Matches(sideBar, @"<a href=""/course(.*?)</a>", RegexOptions.Singleline);
                 foreach (var lecture in listLecture)
                 {
-                   
-
-                   string lectureName = Regex.Match(lecture.ToString(), @">(.*?)</a>", RegexOptions.Singleline).Value.Replace(">", "").Replace("</a", "");
-             
+                    string lectureName = Regex.Match(lecture.ToString(), @">(.*?)</a>", RegexOptions.Singleline).Value.Replace(">", "").Replace("</a", "");
                     string linkLecture = "https://www.howkteam.com"+ Regex.Match(lecture.ToString(), @"<a href=""(.*?)"" class", RegexOptions.Singleline).Value.Replace("<a href=\"", "").Replace("\" class", "");
 
                     MenuTree Subitem = new MenuTree();
                     Subitem.Name = lectureName;
                     Subitem.URL = linkLecture;
-                    App.Current.Dispatcher.Invoke((Action)delegate
-                    { item.Items.Add(Subitem); });
-
-                       
+                    AddItemIntoTreeViewItem(item.Items, Subitem);
                 }
             }
+            treeMain.AddHandler(TreeViewItem.MouseDoubleClickEvent, new MouseButtonEventHandler(MenuItem_MouseDoubleClick));
         }
 
         void AddItemIntoTreeViewItem(ObservableCollection<MenuTree> root, MenuTree node)
@@ -231,28 +216,34 @@ namespace NavigationDrawerPopUpMenu2
                 string content = Temp_content.Substring(Temp_content.IndexOf('>') + 1).Replace("</div>", "").Trim();
                 congnghe.Content = content;
                 this.Dispatcher.Invoke(() => { ListViewNews.Items.Add(congnghe); });
-
             }
             ListViewNews.AddHandler(ListViewItem.MouseDoubleClickEvent, new MouseButtonEventHandler(item_MouseDoubleClick));
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        public void LoadWeb(string url)
         {
-           
-        }
-
-        private void TextBlock_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            String url =  (sender as TextBlock).Tag.ToString();
-
+            web.WebView.Url = null;
             web.WebView.LoadUrl(url);
         }
-
         public void item_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string link = (ListViewNews.SelectedItem as New).Link;
+            string link = "";
+            if (ListViewNews.SelectedItem is New)
+            {
+                link = (ListViewNews.SelectedItem as New).Link;
+            }
+            else if (ListViewNews.SelectedItem is Job)
+            {
+                link = (ListViewNews.SelectedItem as Job).Link;
+            }
             web.WebView.Url = null;
             web.WebView.LoadUrl(link);
+        }
+
+        private void MenuItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            string url = (treeMain.SelectedItem as MenuTree).URL;
+            LoadWeb(url);
         }
     }
 }
