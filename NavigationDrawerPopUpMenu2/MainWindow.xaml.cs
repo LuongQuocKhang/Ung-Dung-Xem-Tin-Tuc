@@ -40,7 +40,6 @@ namespace NavigationDrawerPopUpMenu2
             {
                 Process.Start(e.TargetUrl);
             };
-
         }
 
         private void ButtonOpenMenu_Click(object sender, RoutedEventArgs e)
@@ -101,8 +100,6 @@ namespace NavigationDrawerPopUpMenu2
                 default:
                     break;
             }
-            ButtonCloseMenu.Visibility = Visibility.Collapsed;
-            ButtonOpenMenu.Visibility = Visibility.Visible;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
